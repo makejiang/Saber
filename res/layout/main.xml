@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+	android:weightSum = "27"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tiptext"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		android:layout_weight = "26"
+        android:textSize="21sp"
+        android:text ="@string/tip_text" />
+
+    <Button
+        android:id="@+id/bt_download"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight = "0.5"        
+        android:text="@string/bt_download_title" />
+
+    <Button
+        android:id="@+id/bt_cplog"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight = "0.5"
+        android:text="@string/bt_cplog_title" />
+
+</LinearLayout>

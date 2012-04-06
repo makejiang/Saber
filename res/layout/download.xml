@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" android:keepScreenOn="true" android:ignoreGravity="@layout/download">
+
+    <TextView
+        android:id="@+id/tiptext"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:scrollbars="vertical"
+        android:singleLine="false"
+        android:text="@string/tip_text"
+        android:textSize="18sp" />
+
+    <ProgressBar
+        android:id="@+id/prbar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tiptext"
+        android:max="100"
+        android:progress="0" />
+
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bt_start"
+        android:layout_below="@+id/tiptext" >
+
+    </ListView>
+<!-- just for test
+    <Button
+        android:id="@+id/bt_testJump2Boot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:text="@string/bt_testJump2Boot_text" />
+-->
+
+    <Button
+        android:id="@+id/bt_start"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"      
+        android:layout_alignParentLeft="true"
+        android:text="@string/bt_start_title" />
+
+</RelativeLayout>

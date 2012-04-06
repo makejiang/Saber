@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">VIASaber</string>
+	<string name="bt_download_title">Download CP</string>
+	<string name="bt_cplog_title">Get CP Log</string>
+	<string name="bt_start_title">Start</string>	
+	<string name="bt_stop_title">Stop</string>
+	<string name="no_sdcard">Please insert SD card!</string>
+	<string name="no_imgfile">Please put the img files in the right folder!</string>	
+	<string name="no_imgfilesel">Please select one img file and click to start!</string>
+	<string name="no_configfile">Please put the config in the right folder!</string>
+	<string name="no_configfilesel">Please select one config file and click to start!</string>	    
+	<string name="cplog_title">Get cp log</string>
+	<string name="download_title">Download cp img</string>
+	<string name="download_exit_warning">Downloading img, please wait!</string>
+	<string name="tip_text">Select to start!</string>	
+</resources>
