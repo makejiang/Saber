@@ -62,7 +62,7 @@ public class VIASaberActivity extends Activity {
     
     private void LaunchDownloadActivity () {    
         Intent intent = new Intent(this, DownloadActivity.class);
-        FileUtil files = new FileUtil(FileUtil.getImgPath());
+        FileUtil files = new FileUtil(FileUtil.getImgDir());
         ArrayList<String> fileNames = files.getFileNamesList();
         ArrayList<String> filePaths = files.getFilePathsList();
         if (fileNames.isEmpty()|| filePaths.isEmpty()) {
@@ -79,7 +79,7 @@ public class VIASaberActivity extends Activity {
     
     private void LaunchCpLogActivity () {    
         Intent intent = new Intent(this, CpLogActivity.class);
-        FileUtil files = new FileUtil(FileUtil.getCfgPath());
+        FileUtil files = new FileUtil(FileUtil.getCfgDir());
         ArrayList<String> fileNames = files.getFileNamesList();
         ArrayList<String> filePaths = files.getFilePathsList();
         if (fileNames.isEmpty() || filePaths.isEmpty()) {

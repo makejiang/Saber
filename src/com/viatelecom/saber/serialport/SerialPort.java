@@ -24,11 +24,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.viatelecom.saber.Application;
+
 import android.util.Log;
 
 public class SerialPort {
 
-    private static final String TAG = "SerialPort";
 
     /*
      * Do not remove or rename the field mFd: it is used by native method close();
@@ -41,13 +42,13 @@ public class SerialPort {
 
         /* Check access permission */
         if (!device.canRead() || !device.canWrite()) {
-            Log.e(TAG, "Device can't be read or write");
+            Log.e(Application.TagApp, "Device can't be read or write");
             throw new IOException();
         }
 
         mFd = open(device.getAbsolutePath(), baudrate, flags);
         if (mFd == null) {
-            Log.e(TAG, "native open returns null");
+            Log.e(Application.TagApp, "native open returns null");
             throw new IOException();
         }
         mFileInputStream = new FileInputStream(mFd);
@@ -67,7 +68,7 @@ public class SerialPort {
     private native static FileDescriptor open(String path, int baudrate, int flags);
     public native void close();
     static {
-        Log.d(TAG,"before load serial port");
+        Log.d(Application.TagApp,"before load serial port");
         System.loadLibrary("serial_port");
     }
 }

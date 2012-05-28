@@ -28,16 +28,17 @@ import com.viatelecom.saber.serialport.SerialPortFinder;
 
 public class Application extends android.app.Application {
    
+    static public final String TagApp = "Saber";
     
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.v("Application","Created");
+        Log.v(Application.TagApp,"Created");
     }
 
     @Override
     public void onTerminate() {
-        Log.v("Application","Terminated");
+        Log.v(Application.TagApp,"Terminated");
         super.onTerminate();
     }
 
@@ -46,6 +47,7 @@ public class Application extends android.app.Application {
     
     private String getEtsDevPath(){
         String dev_path = "/dev/ttyUSB"+SystemProperties.get("cbp.ets","1");
+        //String dev_path = "/dev/ttyUSB55";
         return dev_path;
     }
 
@@ -54,7 +56,7 @@ public class Application extends android.app.Application {
             /* Read serial port parameters */
             
             String path = getEtsDevPath();
-            Log.i("Application", "Device:"+path);
+            Log.i(Application.TagApp, "Device:"+path);
             int baudrate = 115200;
 
             /* Check parameters */

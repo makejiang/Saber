@@ -69,11 +69,11 @@ public class EtsDnlder extends EtsDevice{
             _callback = new EtsDnlderCallback(){
                 public void onProcess(DnldStatus status, int progress, String info) {
                     if (status == DnldStatus.Error){
-                        Log.e("etsDnlder", info);
+                        Log.e(Application.TagApp, info);
                     } else if (status == DnldStatus.Downloading) {
-                        Log.i("etsDnlder", info + " progress:"+progress);
+                        Log.i(Application.TagApp, info + " progress:"+progress);
                     } else {
-                        Log.i("etsDnlder", info);
+                        Log.i(Application.TagApp, info);
                     }
                 }
             };
@@ -99,7 +99,7 @@ public class EtsDnlder extends EtsDevice{
         } else if (pathname_file.indexOf("cp")>0){
             flashSectionIndex=1;
         } else {
-            Log.e("EtsDnlder", "unknown section for image:\""+imgFile+"\"");
+            Log.e(Application.TagApp, "unknown section for image:\""+imgFile+"\"");
         }
 
         return flashSectionIndex;
@@ -112,17 +112,17 @@ public class EtsDnlder extends EtsDevice{
     private boolean setResetMode(String mode){
         
         String resetMode = SystemProperties.get("persist.cp.reset.mode");
-        Log.v("EtsDnlder", "current \"don't reset modem\" = "+ resetMode);
+        Log.v(Application.TagApp, "current \"don't reset modem\" = "+ resetMode);
         
         if (resetMode.equals(mode)) {
             return true;
         }
         
-        Log.v("EtsDnlder", "set the \"don't reset modem\" = " + mode);
+        Log.v(Application.TagApp, "set the \"don't reset modem\" = " + mode);
         SystemProperties.set("persist.cp.reset.mode", mode);
         
         resetMode = SystemProperties.get("persist.cp.reset.mode");
-        Log.v("EtsDnlder", "\"don't reset modem\" = "+ resetMode + " after set.");
+        Log.v(Application.TagApp, "\"don't reset modem\" = "+ resetMode + " after set.");
         
         return resetMode.equals(mode);
     }
@@ -151,7 +151,7 @@ public class EtsDnlder extends EtsDevice{
         try {
             start(imgPaths);
         } catch (EtsException e) {
-            Log.e("etsDnlder", e.getMessage());
+            Log.e(Application.TagApp, e.getMessage());
         }
         */
         
@@ -252,6 +252,7 @@ public class EtsDnlder extends EtsDevice{
         if (!create()) {
             throw new EtsException("Open the ets device failed");
         }
+        StartRead();
         
         // create the thread and start it
         _dnlderThr = new EtsDnlderThread(this);
@@ -291,22 +292,22 @@ public class EtsDnlder extends EtsDevice{
      * @return
      */
     public boolean loopback(){
-        Log.v("EtsDnlder", "do loopback");
+        Log.v(Application.TagApp, "do loopback");
         
         short id = 0x0000;
         byte[] data = new byte[]{(byte)(System.currentTimeMillis()&0xFF)}; 
         
         EtsMsg msg = sendAndWait(new EtsMsg(id, data), id, 2000);
         if(msg==null){
-            Log.e("EtsDnlder", "loopback failed");
+            Log.e(Application.TagApp, "loopback failed");
             return false;
         }
         
         boolean ret = cmpBytes(msg.getData(), data);
         if(ret){
-            Log.i("EtsDnlder", "loopback success");
+            Log.i(Application.TagApp, "loopback success");
         } else {
-            Log.e("EtsDnlder", "loopback failed");
+            Log.e(Application.TagApp, "loopback failed");
         }
         return ret;
     }
@@ -317,7 +318,7 @@ public class EtsDnlder extends EtsDevice{
      * @return 0:no response, 1:boot, 2:cp 
      */
     public CBPMode checkMode(){
-        Log.v("EtsDnlder", "do check mode");
+        Log.v(Application.TagApp, "do check mode");
         
         short id = 0x00C8;
         EtsMsg msg = sendAndWait(new EtsMsg(id, null), (short) 0xFFFF, 2000);
@@ -331,7 +332,7 @@ public class EtsDnlder extends EtsDevice{
             }
         } 
         
-        Log.v("EtsDnlder", ret.name() + " mode");
+        Log.v(Application.TagApp, ret.name() + " mode");
         return ret; // boot
     }
     
@@ -340,11 +341,11 @@ public class EtsDnlder extends EtsDevice{
      * @return
      */
     public boolean jump2load(CBPMode toMode, boolean openAgain) {
-        Log.v("EtsDnlder", "do jump to loader to " + toMode.name());
+        Log.v(Application.TagApp, "do jump to loader to " + toMode.name());
         
         CBPMode curMode = checkMode();
         if (curMode == CBPMode.Unknown) {
-            Log.e("EtsDnlder", "no response from device?");
+            Log.e(Application.TagApp, "no response from device?");
             return false;
         }
         
@@ -357,7 +358,7 @@ public class EtsDnlder extends EtsDevice{
         destroy();
         
         if(openAgain) {
-            Log.v("EtsDnlder", "wait to open device in " + toMode + " mode");
+            Log.v(Application.TagApp, "wait to open device in " + toMode + " mode");
             try {
                 Thread.sleep(toMode==CBPMode.Boot?mCfg.getTimeoutCp2Boot():mCfg.getTimeoutBoot2Cp());
             } catch (InterruptedException e) {
@@ -366,15 +367,20 @@ public class EtsDnlder extends EtsDevice{
             }
             
             if (!create()) {
-                Log.e("EtsDnlder", "create port failed");
+                Log.e(Application.TagApp, "create port failed");
                 return false;
             }
+            StartRead();
             
             if (toMode == CBPMode.Boot){
                 id = 0x00E0; // boot to loader
-                EtsMsg msg = _msgCache.waitForMsg(id, 1000); 
+                EtsMsg msg = _msgCache.waitForMsg(id, 5*1000); 
                 if (msg==null){
-                    Log.e("EtsDnlder", "check boot2load msg failed");
+                    Log.e(Application.TagApp, "check boot2load msg failed, try to check the mode");
+                    if (checkMode() == CBPMode.Boot){
+                        return true;
+                    }
+                    Log.e(Application.TagApp, "the cbp is not in boot mode");
                     return false;
                 }
             }
@@ -392,10 +398,10 @@ public class EtsDnlder extends EtsDevice{
         short id = 0x04B1;
         EtsMsg msg = sendAndWait(new EtsMsg(id, new byte[]{flashSection}), id, flashSection==0?mCfg.getTimoutEraseBoot():mCfg.getTimoutEraseCp());
         if (msg==null){
-            Log.e("EtsDnlder", "erase flash time out");
+            Log.e(Application.TagApp, "erase flash time out");
             return false;
         }
-        Log.i("EtsDnlder", "erase flash success");
+        Log.i(Application.TagApp, "erase flash success");
         return true;
     }
     
@@ -441,10 +447,10 @@ public class EtsDnlder extends EtsDevice{
             EtsMsg msg = sendAndWait(new EtsMsgProgCmd(++seqToWrite, EtsMsgProgCmd.ERASE, flashSection, imgInfo), 
                                                        EtsMsgProgCmd.ID,  flashSection==0?mCfg.getTimoutEraseBoot():mCfg.getTimoutEraseCp());
             if (msg==null){
-                Log.e("EtsDnlder", "erase flash time out");
+                Log.e(Application.TagApp, "erase flash time out");
                 return false;
             }
-            Log.i("EtsDnlder", "erase flash success");
+            Log.i(Application.TagApp, "erase flash success");
             
             // write flash
             _callback.onProcess(DnldStatus.Downloading, 0, "Downloading flash, section="+EtsDnlder.sectionName[flashSection]);
@@ -477,20 +483,20 @@ public class EtsDnlder extends EtsDevice{
                 if (seqToWrite-seqAck>mCfg.getWindows()||size<=0) { // window size is 3
                      msg = _msgCache.waitForMsg(EtsMsgProgCmd.ID, 2000);
                      if (msg==null){
-                        Log.e("EtsDnlder", "don't get response");
+                        Log.e(Application.TagApp, "don't get response");
                         ret = false;
                         break;
                      }
                      
                      seqAck = msg.getProgRspSequence();                     
                      if (msg.getProgRspAck()==0x01) {
-                         Log.e("EtsDnlder", "get NAK!");
+                         Log.e(Application.TagApp, "get NAK!");
                          ret = false;
                          break;
                      }
                 }
                 
-                //Log.v("EtsDnlder", "current cmd seq:"+ seqToWrite +",ack seq:"+seqAck+",total blocks:"+numBlocks+", this block size:"+size);
+                //Log.v(Application.TagApp, "current cmd seq:"+ seqToWrite +",ack seq:"+seqAck+",total blocks:"+numBlocks+", this block size:"+size);
                 _callback.onProcess(DnldStatus.Downloading, (seqAck*100)/numBlocks, "Downloading flash " + sectionName[flashSection]);
 
             }while (seqToWrite>seqAck);

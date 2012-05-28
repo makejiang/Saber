@@ -3,12 +3,17 @@ package com.viatelecom.saber.ets;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.viatelecom.saber.Application;
+
 import android.util.Log;
 
 public class EtsMsg {
 
+    public static int size_last = 0;
+    
     private short _id;
     protected byte[] _data = null;
+    
     
     public short getId() {
         return _id;
@@ -116,24 +121,27 @@ public class EtsMsg {
         int index = 0;
         List<EtsMsg> msgs = new ArrayList<EtsMsg>();
         
-        int oldSize = size;
-        while(size>=8) {
+        size_last = size;
+        while(size_last>=8) {
             // find the begin
             Boolean findHeader = false;
-            for (;index<=oldSize-8;++index) {
+            for (;index<=size-8;++index) {
                 if( buf[index] == (byte)0xFE &&
                     buf[index+1] == (byte)0xDC && 
                     buf[index+2] == (byte)0xBA &&
                     buf[index+3] == (byte)0x98){
+                    
                     findHeader = true;
                     break;
                 }
             }
             
             if (!findHeader){
-                Log.w("EtsMsg", "can't find the header(index="+index+")");
+                Log.i(Application.TagApp, "can't find the header(index="+index+")");
+                size_last = 0;
                 break;
-            }            
+            }
+            size_last = size-index; // the begin of this message
             index += 4;
         
             // length
@@ -142,29 +150,36 @@ public class EtsMsg {
             temp[1] = buf[index++];
             
             short length = EtsUtil.bytes2short(temp);
-            if(oldSize<index+length || length<2) {
-                Log.w("EtsMsg", "invalid data length(length="+length+", (index="+index+")");
+            if(length<2) {
+                Log.e(Application.TagApp, "invlid length(length="+length+")");
+                size_last = size-index; 
+                continue;
+            }
+            
+            if(size<index+length) {
+                Log.i(Application.TagApp, "not enough data for this message(length="+length+", last buf size="+(size-index));
                 break;
             }
 
             // id
             temp[0] = buf[index++];
             temp[1] = buf[index++];
-            
             short id = EtsUtil.bytes2short(temp);
 
             // data
             temp = new byte[length-2];
-            for(int i=0;i<length-2;i++) {
-                temp[i] = buf[index++];
-            }
+            System.arraycopy(buf, index, temp, 0, length-2);
+            index += length-2;
             
             // new msg
             msgs.add(new EtsMsg(id, temp));
-            size = oldSize - index;
+            
+            // refresh the size_last
+            size_last = size-index;
         }
 
         // msg
+        Log.v(Application.TagApp, "parsed " + msgs.size() + " msgs");
         return msgs; 
     }
     

@@ -23,6 +23,8 @@ import java.io.LineNumberReader;
 import java.util.Iterator;
 import java.util.Vector;
 
+import com.viatelecom.saber.Application;
+
 import android.util.Log;
 
 public class SerialPortFinder {
@@ -43,7 +45,7 @@ public class SerialPortFinder {
             int i;
             for (i=0; i<files.length; i++) {
                 if (files[i].getAbsolutePath().startsWith(mDeviceRoot)) {
-                    Log.d(TAG, "Found new device: " + files[i]);
+                    Log.d(Application.TagApp, "Found new device: " + files[i]);
                     mDevices.add(files[i]);
                 }
             }
@@ -55,7 +57,6 @@ public class SerialPortFinder {
         }
     }
 
-    private static final String TAG = "SerialPort";
 
     private Vector<Driver> mDrivers = null;
 
@@ -69,7 +70,7 @@ public class SerialPortFinder {
             String drivername = l.substring(0, 0x15).trim();
             String[] w = l.split(" +");
             if ((w.length >= 5) && (w[w.length-1].equals("serial"))) {
-                Log.d(TAG, "Found new driver " + drivername + " on " + w[w.length-4]);
+                Log.d(Application.TagApp, "Found new driver " + drivername + " on " + w[w.length-4]);
                 mDrivers.add(new Driver(drivername, w[w.length-4]));
             }
         }

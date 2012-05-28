@@ -10,7 +10,6 @@ import android.util.Log;
 
 public class FileUtil {
     
-    public static final String TAG = "Saber log";
     
     private File mDir = null;
     private String mPath = null;
@@ -25,42 +24,37 @@ public class FileUtil {
     
     public static boolean sdCardExist () {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            Log.d(TAG, "sdCardExist true");
+            Log.d(Application.TagApp, "sdCardExist true");
             return true;
         } else {
-            Log.d(TAG, "sdCardExist false");
+            Log.d(Application.TagApp, "sdCardExist false");
             return false;
         }
     }
     
-    public static String getCfgPath(){
-        if(android.os.Build.VERSION.RELEASE.startsWith("3")){
-            return Environment.getExternalStorageDirectory().getAbsolutePath() + "/external_sd/cbp/cfg/";
-        }else{
-            return Environment.getExternalStorageDirectory().getAbsolutePath() + "/cbp/cfg/";
-        }
-    }
-
-    public static String getLogPath(){
-        if(android.os.Build.VERSION.RELEASE.startsWith("3")){
-            return Environment.getExternalStorageDirectory().getAbsolutePath() + "/external_sd/cbp/log/";
-        }else{
-            return Environment.getExternalStorageDirectory().getAbsolutePath() + "/cbp/log/";
-        }
+    private static String getCbpDir()
+    {
+        return Environment.getExternalStorageDirectory().getAbsolutePath() + "/cbp/";
+        //return Environment.getExternalStorageDirectory().getAbsolutePath() + "/external_sd/cbp/";
+        //return "/mnt/ext_sdcard/cbp/";
     }
     
-    public static String getImgPath(){
-        if(android.os.Build.VERSION.RELEASE.startsWith("3")){
-            return Environment.getExternalStorageDirectory().getAbsolutePath() + "/external_sd/cbp/img/";
-        }else{
-            return Environment.getExternalStorageDirectory().getAbsolutePath() + "/cbp/img/";
-        }
+    public static String getCfgDir(){
+        return getCbpDir() + "cfg/";
+    }
+
+    public static String getLogDir(){
+        return getCbpDir() + "log/";
+    }
+    
+    public static String getImgDir(){
+        return getCbpDir() + "img/";
     }
 
 
     private boolean fileWithSuffix (String filename, String suffix) {
         if (filename == null) {
-            Log.d(TAG, "fileWithSuffix filename is null!");
+            Log.d(Application.TagApp, "fileWithSuffix filename is null!");
             return false;
         }    
         
@@ -68,7 +62,7 @@ public class FileUtil {
         if (index > 0) {
             String fileExtention = filename.substring(index + 1);
             if( fileExtention.equalsIgnoreCase(suffix)) {
-                Log.d(TAG, "fileWithSuffix suffix equal!");
+                Log.d(Application.TagApp, "fileWithSuffix suffix equal!");
                 return true;
             }
         }
@@ -89,17 +83,17 @@ public class FileUtil {
         File[] files = mDir.listFiles();
         if (files != null) {
             for(File file:files){
-                if (mPath.equals(getCfgPath())) {
-                    Log.d(TAG, "getFileAndPathList CONFIG PATH");
+                if (mPath.equals(getCfgDir())) {
+                    Log.d(Application.TagApp, "getFileAndPathList CONFIG PATH");
                     if (fileWithSuffix(file.getName(), "bcfg")) {
-                        Log.d(TAG, "name:" + file.getName() + "path:" + file.getPath());
+                        Log.d(Application.TagApp, "name:" + file.getName() + "path:" + file.getPath());
                         mFileNames.add(file.getName());
                         mFilePaths.add(file.getPath());                
                     }
-                } else if (mPath.equals(getImgPath())) {
-                    Log.d(TAG, "getFileAndPathList IMG PATH");
+                } else if (mPath.equals(getImgDir())) {
+                    Log.d(Application.TagApp, "getFileAndPathList IMG PATH");
                     if(fileWithSuffix(file.getName(), "rom")) {
-                        Log.d(TAG, "name:" + file.getName() + "path:" + file.getPath());
+                        Log.d(Application.TagApp, "name:" + file.getName() + "path:" + file.getPath());
                         mFileNames.add(file.getName());
                         mFilePaths.add(file.getPath());
                     }

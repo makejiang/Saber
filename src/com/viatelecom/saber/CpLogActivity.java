@@ -66,11 +66,14 @@ public class CpLogActivity extends ListActivity{
                                 startEtsLogService();
                                 mState = true;
                                 mButton.setText(R.string.bt_stop_title);
+                                
                                 mList.setVisibility(View.GONE);
-
+                                mButton.setVisibility(View.GONE);
                             } catch (EtsException e) {
                                 Log.e("etslog_exception", e.getMessage());
                                 mText.setText(e.getMessage());
+                                mButton.setVisibility(View.VISIBLE);
+                                
                             }
 
                         } else if (mPath == null){
@@ -95,9 +98,9 @@ public class CpLogActivity extends ListActivity{
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
       @Override
       public void onReceive(Context context, Intent intent) {
-        Log.e("onReceive", intent+"");
+        Log.i("onReceive", intent+"");
         if (intent.getAction().equals(UPDATE_INFO_ACTION)) {
-            Log.e("onReceive", "Action ==LOG_INFO_UPDATE");
+            //Log.i("onReceive", "Action==LOG_INFO_UPDATE");
             Bundle data = new Bundle();
             data.putCharSequence("LogInfo", intent.getStringExtra("LogInfo"));
             Message msg = Message.obtain(mHandler, LOG_UPDATE);
@@ -114,7 +117,16 @@ public class CpLogActivity extends ListActivity{
              switch (msg.what) {
                  case LOG_UPDATE:                  
                     if (mState) {
-                        mText.append(msg.getData().getCharSequence("LogInfo"));
+                        CharSequence log = msg.getData().getCharSequence("LogInfo"); 
+                        mText.append(log);
+                        
+                        String log_desc = log.toString();
+                        if(log_desc.equals("log process started\n"))
+                        {
+                            mButton.setVisibility(View.VISIBLE);
+                            
+                        }
+                        
                     }                     
                     break;                 
                  default:

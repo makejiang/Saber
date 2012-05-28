@@ -2,6 +2,7 @@ package com.viatelecom.saber.ets;
 
 import android.util.Log;
 
+import com.viatelecom.saber.Application;
 import com.viatelecom.saber.ets.EtsDnlder.CBPMode;
 import com.viatelecom.saber.ets.EtsDnlder.DnldStatus;
 import com.viatelecom.saber.ets.EtsDnlder.EtsDnlderCallback;
@@ -21,7 +22,7 @@ public class EtsDnlderThread extends Thread {
 
     @Override
     public void run() {
-        Log.i("EtsDnlder", "Donwloader Thread started");
+        Log.i(Application.TagApp, "Donwloader Thread started");
         
         try {
             Thread.sleep(3000);

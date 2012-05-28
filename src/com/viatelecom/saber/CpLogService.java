@@ -25,7 +25,7 @@ public class CpLogService extends Service{
                 intent.putExtra("LogInfo", info+"\n");
                 intent.setAction(UPDATE_INFO_ACTION);
                 sendBroadcast(intent);
-                Log.i("etsLog", info);
+                Log.i(Application.TagApp, info);
             }
         }
     };
