@@ -32,22 +32,29 @@ public abstract class EtsDevice {
         public void run() {
             super.run();
             Log.i(Application.TagApp, "read thread start");
-            byte[] buf_read = new byte[4096];
+            
+            byte[] buf_read = new byte[8192];
+            byte[] buf = new byte[4096];
             
             // read data
             while(!isInterrupted()) {
                 int size;
                 try {
                     if (mInputStream == null) return;
-                    
-                    byte[] buf = new byte[4096];
+
                     size = mInputStream.read(buf);
                     if (size > 0) {
-                        Log.v(Application.TagApp, "revice: " + size + " bytes");
+                        if(size==4096)
+                        {
+                            Log.i(Application.TagApp, "revice: " + size + " bytes");
+                        }
+                        
+                        //Log.v(Application.TagApp, "revice: " + size + " bytes");
                         System.arraycopy(buf, 0, buf_read, EtsMsg.size_last, size);
                         
                         int size_total = EtsMsg.size_last+size;
                         //Log.v(Application.TagApp, "Total: " + size_total + " bytes");
+                        
                         onDataReceived(buf_read, size_total); // this will refresh the EtsMsg.size_last
                         
                         //Log.v(Application.TagApp, "left: " + EtsMsg.size_last + " bytes after parse");
