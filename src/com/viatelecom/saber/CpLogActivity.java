@@ -100,7 +100,6 @@ public class CpLogActivity extends ListActivity{
       public void onReceive(Context context, Intent intent) {
         Log.i("onReceive", intent+"");
         if (intent.getAction().equals(UPDATE_INFO_ACTION)) {
-            //Log.i("onReceive", "Action==LOG_INFO_UPDATE");
             Bundle data = new Bundle();
             data.putCharSequence("LogInfo", intent.getStringExtra("LogInfo"));
             Message msg = Message.obtain(mHandler, LOG_UPDATE);
@@ -139,14 +138,15 @@ public class CpLogActivity extends ListActivity{
         Intent intent = new Intent();
         intent.setClass(this, CpLogService.class);  
         intent.putExtra("PATH", mPath);
+        
         startService(intent);
     }
 
     private void stopEtsLogService() {
         Intent intent = new Intent();
-        intent.setClass(this, CpLogService.class);                        
+        intent.setClass(this, CpLogService.class);       
+        
         stopService(intent);
-
     }
 
     private void setListContent () {

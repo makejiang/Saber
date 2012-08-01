@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -43,6 +44,14 @@ public class VIASaberActivity extends Activity {
 
         });
         
+        Application app = (Application)getApplication(); 
+        if(app.IsFlashLess())
+        {
+            Log.i(Application.TagApp, "It is a flash less chip");
+            mBtDownload.setVisibility(View.GONE);
+        }
+        
+        
         mBtCpLog =  (Button) findViewById(R.id.bt_cplog);
         mBtCpLog.setOnClickListener(new android.view.View.OnClickListener() {
 
@@ -57,6 +66,8 @@ public class VIASaberActivity extends Activity {
                 }
             }
         });
+        
+        
        
     }
     

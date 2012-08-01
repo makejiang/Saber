@@ -1,11 +1,18 @@
 package com.viatelecom.saber;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import android.os.Environment;
 import android.os.StatFs;
 import java.util.ArrayList;   
 import java.util.Collections;
 import java.util.List;   
+
+import org.apache.http.util.EncodingUtils;
+
 import android.util.Log;
 
 public class FileUtil {
@@ -19,6 +26,8 @@ public class FileUtil {
     public FileUtil (String path) {
         mDir = new File(path);
         mPath = path;
+        
+        Log.i(Application.TagApp, "file util:"+mPath);
         getFileAndPathList();        
     }
     
@@ -50,7 +59,23 @@ public class FileUtil {
     public static String getImgDir(){
         return getCbpDir() + "img/";
     }
+    
+    private static String streamRead(InputStream is) throws IOException {  
+        int buffersize = is.available();        // 取得输入流的字节长度  
+        byte buffer[] = new byte[buffersize];  
+        is.read(buffer);                        // 将数据读入数组  
+        is.close();                             // 读取完毕后要关闭流。  
+        String result = EncodingUtils.getString(buffer, "UTF-8");   // 设置取得的数据编码，防止乱码  
+        return result;  
+    }
 
+    public static String readFile(String path_file)throws IOException {
+        FileInputStream inputStream = new FileInputStream(path_file);  
+        String result = streamRead(inputStream);
+        
+        return result;
+    }
+    
 
     private boolean fileWithSuffix (String filename, String suffix) {
         if (filename == null) {

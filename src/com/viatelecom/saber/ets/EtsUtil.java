@@ -138,4 +138,14 @@ public class EtsUtil {
         return data;
     }
     
+    public static byte[] doubleToByte(double d){
+        byte[] bytes = new byte[8];
+        
+        long l = Double.doubleToLongBits(d);
+        for(int i = 0; i < bytes.length; i++ ){
+            bytes[i]= new Long(l).byteValue();
+            l=l>>8;
+        }
+        return bytes;
+     }
 }

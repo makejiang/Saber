@@ -36,16 +36,19 @@ public class CpLogService extends Service{
     }
 
     public void onCreate() {
-        Log.d(TAG, "onStartCommand");  
-        
+        Log.d(TAG, "onCreate");  
         etsLog = new EtsLog((Application)getApplication(), _cbEtsLog);
     }
     
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand");  
-        String path = intent.getStringExtra("PATH");
+        Log.d(TAG, "onStartCommand");
+        String path = null;
+        if (intent!=null){
+            path = intent.getStringExtra("PATH");
+        }
         etsLog.start(path);
         setForeground(true);
+        
         return START_STICKY; 
     }
 
@@ -56,6 +59,7 @@ public class CpLogService extends Service{
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
         etsLog.stop();
+        setForeground(false);
     }
 
 }

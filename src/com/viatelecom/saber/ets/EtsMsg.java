@@ -11,6 +11,9 @@ public class EtsMsg {
 
     public static int size_last = 0;
     
+    private static long span_ms = 2208988800000l;
+    private static long ms_per_day = 86400000l;
+    
     private short _id;
     protected byte[] _data = null;
     
@@ -28,7 +31,19 @@ public class EtsMsg {
         
         // log tickcount and txrx
         long time_now = System.currentTimeMillis();
+        
+        // old version
         byte[] time = EtsUtil.long2bytes(time_now);
+        
+        // transfer it to MFC's DATE
+        /*
+        time_now += span_ms;
+        double mfc_date_timestamp = (double)time_now/ms_per_day;
+        
+        byte[] time = EtsUtil.doubleToByte(mfc_date_timestamp);
+        */
+        
+        // put it into buf
         System.arraycopy(time, 0, buf, 0, 8);
         
         // rx
@@ -172,6 +187,7 @@ public class EtsMsg {
             index += length-2;
             
             // new msg
+            Log.v(Application.TagApp, "received ets msg " + id);
             msgs.add(new EtsMsg(id, temp));
             
             // refresh the size_last

@@ -117,10 +117,6 @@ public class EtsLog extends EtsDevice {
      */
     public void start(String cfgPath) throws EtsException {
         
-        if(cfgPath==null){
-            throw new EtsException("path of config file is null");
-        }
-        
         if(mSerialPort!=null){
             throw new EtsException("Log thread has been started");
         }
@@ -138,13 +134,6 @@ public class EtsLog extends EtsDevice {
             throw new EtsException("open the ets device failed");
         }
         
-        // parse the cfg file and get etsmsg list
-        _callback.onProcess(LogStatus.Logging, "parsing the config file");
-        if (!parseCfgFile(cfgPath)) {
-            destroy();
-            throw new EtsException("open cfg file failed");
-        }
-        
         // create the log file
         if (!createLogfile()){
             destroy();
@@ -156,21 +145,32 @@ public class EtsLog extends EtsDevice {
         // read all message in cbp's buffer
         _callback.onProcess(LogStatus.Logging, "reading buffer data in cbp");
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         
-        // send thems to serial port
-        _callback.onProcess(LogStatus.Logging, "writing config to ets device");
-        for(EtsMsg _msg:_etsMsgs){
-            write(_msg);
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        
+        if(cfgPath!=null){
+            // parse the cfg file and get etsmsg list
+           _callback.onProcess(LogStatus.Logging, "parsing the config file");
+           if (!parseCfgFile(cfgPath)) {
+               destroy();
+               throw new EtsException("open cfg file failed");
+           }
+           
+           // send thems to serial port
+           _callback.onProcess(LogStatus.Logging, "writing config to ets device");
+           for(EtsMsg _msg:_etsMsgs){
+               write(_msg);
+               try {
+                   Thread.sleep(20);
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+           }
         }
+        
         
         _callback.onProcess(LogStatus.Logging, "log process started");
         

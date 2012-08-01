@@ -19,6 +19,7 @@ package com.viatelecom.saber;
 import java.io.File;
 import java.io.IOException;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
 
 import android.os.SystemProperties;
 import android.util.Log;
@@ -47,6 +48,7 @@ public class Application extends android.app.Application {
     
     private String getEtsDevPath(){
         String dev_path = "/dev/ttyUSB"+SystemProperties.get("cbp.ets","1");
+        //String dev_path = "/dev/ttyVUSB1"; // for gionee
         //String dev_path = "/dev/ttyUSB55";
         return dev_path;
     }
@@ -77,5 +79,37 @@ public class Application extends android.app.Application {
         }
     }
     
-    
+    public boolean IsFlashLess(){
+
+        File dir_devices = new File("/sys/bus/usb/devices/");
+        File[] files = dir_devices.listFiles();
+        for(File file:files){
+            String path_device = file.getAbsolutePath();
+            Log.v(Application.TagApp, "Device path:"+path_device);
+            
+            try {
+                String content = FileUtil.readFile(path_device+"/idVendor");
+                content = content.substring(0, 4);
+                Log.i(Application.TagApp, "It's VID:" + content);
+                
+                if(content.compareToIgnoreCase("15eb")==0){
+                    
+                    content = FileUtil.readFile(path_device+"/idProduct");
+                    content = content.substring(0, 4);
+                    Log.i(Application.TagApp, "It's PID:" + content);
+                    
+                    if(content.compareToIgnoreCase("0004")==0){
+                        
+                        return true;
+                    }
+                    
+                    return false;
+                }
+            } catch (IOException e) {
+                Log.d(Application.TagApp, "no speical file in "+path_device);
+            }
+        }
+        
+        return false;
+    }
 }
